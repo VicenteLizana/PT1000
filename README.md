@@ -6,7 +6,7 @@ Se usan dos LTC2984 en el mismo bus SPI:
 
 | Chip | Papel | Qué mide |
 |---|---|---|
-| **#0 · `CHIP_REF`** | Referencia / control, **fuera del haz** | Conversión simple de **CH4** |
+| **#0 · `CHIP_REF`** | Referencia / control. El chip está **fuera del haz**; su PT1000 está en la zona irradiada | Conversión simple de **CH4** |
 | **#1 · `CHIP_DUT`** | Dispositivo bajo prueba, **dentro del haz** | Conversión múltiple de **CH4, CH6, …, CH20** (9 × PT1000 de 2 hilos) |
 
 En cada ciclo se compara la memoria de configuración del DUT con una copia maestra guardada en la flash del micro. Así se cuentan los bits alterados por la radiación, se corrigen y se verifica que la corrección quedó bien.
@@ -28,19 +28,23 @@ En cada ciclo se compara la memoria de configuración del DUT con una copia maes
 flowchart LR
     PC["PC<br/>terminal serie / logger<br/>115200 8N1"]
     MCU["NUCLEO-L476RG<br/>STM32L476 @ 80 MHz"]
+    BUS(["SPI1 compartido<br/>SCK · MOSI · MISO"])
     subgraph REF["Fuera del haz"]
-        C0["LTC2984 #0<br/>CS: LTC_CS · INT: LTC_INT"]
-        S0["PT1000 (CH4)"]
+        C0["LTC2984 #0<br/>referencia"]
     end
     subgraph DUT["Zona irradiada"]
-        C1["LTC2984 #1<br/>CS: LTC2_CS · INT: LTC2_INT"]
+        S0["PT1000 (CH4)"]
+        C1["LTC2984 #1<br/>DUT"]
         S1["9 × PT1000<br/>CH4…CH20 pares"]
     end
     PC <-- "USB (ST-LINK VCP)<br/>USART2" --> MCU
-    MCU <-- "SPI1 compartido" --> C0
-    MCU <-- "SPI1 compartido" --> C1
-    MCU -. "LTC_RST (común)" .-> C0
-    MCU -. "LTC_RST (común)" .-> C1
+    MCU <--> BUS
+    BUS <--> C0
+    BUS <--> C1
+    MCU -. "LTC_CS · LTC_INT" .- C0
+    MCU -. "LTC2_CS · LTC2_INT" .- C1
+    MCU -. "LTC_RST (común)" .- C0
+    MCU -. "LTC_RST (común)" .- C1
     C0 --- S0
     C1 --- S1
 ```
