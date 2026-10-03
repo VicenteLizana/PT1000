@@ -77,7 +77,7 @@ Está guardada como constantes en la **flash** del micro, así que un SEU en la 
 
 | Registro | Valor | Significado |
 |---|---|---|
-| CH2 (`0x204`) | `0xE80FA000` | Resistencia de referencia R<sub>SENSE</sub> = 1 kΩ |
+| CH2 (`0x204`) | `0xE80FA000` | Resistencia de referencia R<sub>SENSE</sub> = 1000,000 Ω (tipo 29; bits 26:0 = R × 1024) |
 | CH1, CH3…CH20 | `0x78860000` | RTD PT1000, 2 hilos, R<sub>SENSE</sub> en CH2 (compartida), 1 mA, curva europea |
 | Máscara `0x0F4`–`0x0F7` | `0x000AAAA8` | `0x0F5=0x0A` (CH18, CH20) · `0x0F6=0xAA` (CH10–CH16) · `0x0F7=0xA8` (CH4, CH6, CH8) |
 
@@ -155,4 +155,3 @@ En cada ciclo se envían tres líneas, con los campos separados por `|`:
 - [ ] Medir en el hardware real el tiempo de la conversión múltiple de 9 canales. Si supera 1000 ms, hay que subir `CONV_TIMEOUT_MS`.
 - [ ] Separar las líneas de reset. Hoy, recuperar el DUT de un latch-up también resetea la referencia.
 - [ ] Agregar a la copia maestra y vigilar los registros globales `0x0F0` (unidades / filtro 50-60 Hz) y `0x0FF` (retardo del mux), tras confirmar sus valores por defecto en la hoja de datos.
-- [ ] Confirmar el valor de R<sub>SENSE</sub> de CH2: el documento indica `0xE80FA933` (≈ 1002,3 Ω) y el firmware usa `0xE80FA000` (1000 Ω).

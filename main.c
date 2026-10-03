@@ -49,7 +49,9 @@
 #define LTC_ADDR_MASK        0x0F4   /* 0x0F4..0x0F7: 4 bytes consecutivos */
 
 /* Copia maestra (en flash, no en RAM) */
-#define CFG_RSENSE   0xE80FA000UL    /* Rsense 1 kOhm en CH2              */
+/* Rsense en CH2: bits 31:27 = 29 (resistencia de referencia),
+   bits 26:0 = R * 1024 -> 0x00FA000 = 1024000 / 1024 = 1000,000 Ohm */
+#define CFG_RSENSE   0xE80FA000UL
 #define CFG_PT1000   0x78860000UL    /* PT-1000, Rsense en CH2            */
 /* 0x0F4=0x00, 0x0F5=0x0A, 0x0F6=0xAA, 0x0F7=0xA8 -> CH4,6,...,20        */
 #define MASK_MULTI   0x000AAAA8UL
